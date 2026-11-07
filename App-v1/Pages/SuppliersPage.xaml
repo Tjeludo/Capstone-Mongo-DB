@@ -1,0 +1,271 @@
+<Page
+    x:Class="App_v1.Pages.SuppliersPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:viewModels="using:App_v1.ViewModels" 
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:notification="using:Syncfusion.UI.Xaml.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:App_v1.Converters"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
+
+    <!-- Bind this page to SupplierViewModel -->
+    <Page.DataContext>
+        <viewModels:SupplierViewModel/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <!-- Converter to switch boolean values to Visibility -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header row -->
+            <RowDefinition Height="*"/>
+            <!-- Main content row -->
+        </Grid.RowDefinitions>
+
+        <!--  Header with Title and Buttons  -->
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Left: page title -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Right: action buttons -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Page Title -->
+                <TextBlock 
+                    Text="Suppliers Management"
+                    FontSize="24"
+                    VerticalAlignment="Center"
+                    Grid.Column="0"/>
+
+                <!-- Action Buttons (Add, Download, Upload) -->
+                <StackPanel 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10"
+                    Grid.Column="1">
+
+                    <!-- Add Supplier Button -->
+                    <Button 
+                        x:Name="AddSupplierButton"
+                        Background="#41C200"
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="AddSupplier_Click"
+                        Visibility="{Binding CanAddSupplier, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xECC8;"/>
+                            <TextBlock Text="Add Supplier"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Download CSV Button -->
+                    <Button 
+                        x:Name="DownloadButton"
+                        Background="#1A98FF" 
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="DownloadCSV_Click"
+                        Visibility="{Binding CanDownloadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <!-- Normal button content -->
+                            <StackPanel x:Name="DownloadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xEBD3;"/>
+                                <TextBlock Text="Download CSV"/>
+                            </StackPanel>
+                            <!-- Busy indicator shown while downloading -->
+                            <muxc:ProgressRing x:Name="DownloadBusyIndicator" IsActive="False" Visibility="Collapsed" Height="20" Width="20"/>
+                        </Grid>
+                    </Button>
+
+                    <!-- Upload CSV Button -->
+                    <Button 
+                        x:Name="UploadButton"
+                        Background="Orange" 
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="UploadCSV_Click"
+                        Visibility="{Binding CanUploadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <!-- Normal button content -->
+                            <StackPanel x:Name="UploadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE753;"/>
+                                <TextBlock Text="Upload CSV"/>
+                            </StackPanel>
+                            <!-- Busy indicator shown while uploading -->
+                            <muxc:ProgressRing x:Name="UploadBusyIndicator" IsActive="False" Visibility="Collapsed" Height="20" Width="20"/>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===== DataGrid to display suppliers ===== -->
+        <dataGrid:SfDataGrid 
+            x:Name="sfDataGrid"
+            Grid.Row="1"
+            ItemsSource="{Binding Suppliers}"
+            SelectionMode="None"
+            AllowFiltering="True"
+            AllowSorting="True"
+            AllowTriStateSorting="True"
+            AllowGrouping="True"
+            AllowEditing="False"
+            AllowResizingColumns="True"
+            GridLinesVisibility="Both"
+            HeaderLinesVisibility="Both"
+            ShowGroupDropArea="False"
+            ColumnWidthMode="Auto"
+            NavigationMode="Row"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AutoGenerateColumns="False">
+
+            <!-- Define the visible columns -->
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="ID" HeaderText="Supplier ID" />
+                <dataGrid:GridTextColumn MappingName="Name" HeaderText="Supplier Name" TextWrapping="Wrap"/>
+                <dataGrid:GridTextColumn MappingName="Email" HeaderText="Email" TextWrapping="Wrap" Width="320"/>
+                <dataGrid:GridTextColumn MappingName="PhoneNumber" HeaderText="Phone" Width="200"/>
+                <dataGrid:GridTextColumn MappingName="Address" HeaderText="Address" Width="300" TextWrapping="Wrap"/>
+                <dataGrid:GridTextColumn MappingName="SalesRep" HeaderText="Sales Rep"/>
+
+                <!-- Actions column with View, Edit, Delete buttons -->
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="240" AllowFiltering="False" AllowSorting="False">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+                                <!-- View Button -->
+                                <Button 
+                                    Background="#17a2b8"
+                                    Foreground="White"
+                                    CornerRadius="12"
+                                    Padding="8,4"
+                                    Click="ViewSupplier_Click"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanViewSupplier, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE890;"/>
+                                        <TextBlock Text="View" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <!-- Edit Button -->
+                                <Button 
+                                    Background="#28a745"
+                                    Foreground="White"
+                                    CornerRadius="12"
+                                    Padding="8,4"
+                                    Click="EditSupplier_Click"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanEditSupplier, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE932;"/>
+                                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <!-- Delete Button -->
+                                <Button 
+                                    Background="#dc3545"
+                                    Foreground="White"
+                                    CornerRadius="12"
+                                    Padding="8,4"
+                                    Click="DeleteSupplier_Click"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanDeleteSupplier, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE74D;"/>
+                                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+
+        <!-- Global notification bar (for success/error messages) -->
+        <muxc:InfoBar 
+            x:Name="NotificationInfoBar"
+            IsOpen="False"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Margin="0,0,0,24"
+            MaxWidth="800"/>
+
+        <!-- ===== Dialog for adding a supplier ===== -->
+        <ContentDialog
+            x:Name="AddSupplierDialog"
+            Title="Add Supplier"
+            PrimaryButtonText="Save"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="False"
+            PrimaryButtonClick="AddSupplierDialog_PrimaryButtonClick">
+
+            <!-- Add Supplier form fields -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <TextBox x:Name="SupplierNameTextBox" Header="Supplier Name *" Width="300" PlaceholderText="Enter supplier name" TextChanged="AddForm_InputChanged"/>
+                    <TextBox x:Name="SupplierEmailTextBox" Header="Email *" Width="300" PlaceholderText="Enter supplier email" TextChanged="AddForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="SupplierCountryCodeComboBox" Header="Code *" Width="85" SelectionChanged="AddForm_InputChanged">
+                            <ComboBoxItem Content="+27"/>
+                            <ComboBoxItem Content="+263"/>
+                        </ComboBox>
+                        <TextBox x:Name="SupplierPhoneTextBox" Header="Phone Number *" Width="203" PlaceholderText="Enter 9 digit phone number" TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <TextBox x:Name="SupplierStreetTextBox" Header="Street/Road Name *" Width="300" PlaceholderText="Enter street address" TextChanged="AddForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox x:Name="SupplierSuburbTextBox" Header="Suburb" Width="144" PlaceholderText="Enter suburb"/>
+                        <TextBox x:Name="SupplierCityTextBox" Header="City *" Width="144" PlaceholderText="Enter city" TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox x:Name="SupplierCountryTextBox" Header="Country *" Width="144" PlaceholderText="Enter country" TextChanged="AddForm_InputChanged"/>
+                        <TextBox x:Name="SupplierZipCodeTextBox" Header="Zip Code *" Width="144" PlaceholderText="Enter zip code" TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <TextBox x:Name="SupplierSalesRepTextBox" Header="Sales Representative *" Width="300" PlaceholderText="Enter sales rep name" TextChanged="AddForm_InputChanged"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <!-- ===== Dialog for editing a supplier ===== -->
+        <ContentDialog
+            x:Name="EditSupplierDialog"
+            Title="Edit Supplier"
+            PrimaryButtonText="Update"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="True"
+            PrimaryButtonClick="EditSupplierDialog_PrimaryButtonClick">
+
+            <!-- Edit Supplier form fields -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <TextBox x:Name="EditSupplierIdTextBox" Header="Supplier ID" Width="300" IsReadOnly="True" Background="LightGray"/>
+                    <TextBox x:Name="EditSupplierNameTextBox" Header="Supplier Name *" Width="300" PlaceholderText="Enter supplier name" TextChanged="EditForm_InputChanged"/>
+                    <TextBox x:Name="EditSupplierEmailTextBox" Header="Email *" Width="300" PlaceholderText="Enter supplier email" TextChanged="EditForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="EditSupplierCountryCodeComboBox" Header="Code *" Width="85" SelectionChanged="EditForm_InputChanged">
+                            <ComboBoxItem Content="+27"/>
+                            <ComboBoxItem Content="+263"/>
+                        </ComboBox>
+                        <TextBox x:Name="EditSupplierPhoneTextBox" Header="Phone Number *" Width="203" PlaceholderText="Enter 9 digit phone number" TextChanged="EditForm_InputChanged"/>
+                    </StackPanel>
+                    <TextBox x:Name="EditSupplierAddressTextBox" Header="Address *" Width="300" Height="100" AcceptsReturn="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="Enter full supplier address" TextChanged="EditForm_InputChanged"/>
+                    <TextBox x:Name="EditSupplierSalesRepTextBox" Header="Sales Representative *" Width="300" PlaceholderText="Enter sales rep name" TextChanged="EditForm_InputChanged"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+    </Grid>
+</Page>

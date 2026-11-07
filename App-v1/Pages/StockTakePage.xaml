@@ -1,0 +1,115 @@
+<Page
+    x:Class="App_v1.Pages.StockTakePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:syncfusion="using:Syncfusion.UI.Xaml.Core"
+    xmlns:models="using:App_v1.Models"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <models:StockTakeViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- FIX #2: Header Layout Changed -->
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Takes up remaining space -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Sizes to its content (the buttons) -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Centered the TextBlock vertically -->
+                <TextBlock Text="Stock Take Management"
+                           FontSize="24"
+                           VerticalAlignment="Center"
+                           Grid.Column="0"/>
+
+                <!-- Grouped buttons in a StackPanel for alignment -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Button Width="200"
+                            Height="40"
+                            Background="#41C200"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="Add_StockTake_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF0E4;"/>
+                            <TextBlock Text="Add Stock Take" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Width="200"
+                            Height="40"
+                            Background="Orange"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="Print_Template_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Print"/>
+                            <TextBlock Text="Print Template" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+
+        <dataGrid:SfDataGrid x:Name="sfDataGrid"
+                             Grid.Row="1"
+                             ItemsSource="{Binding StockTakes}"
+                             SelectionMode="None"
+                             AllowFiltering="True"
+                             AllowSorting="True"
+                             AllowTriStateSorting="True"
+                             AllowGrouping="True"
+                             AllowEditing="False"
+                             AllowResizingColumns="True"
+                             GridLinesVisibility="Both"
+                             HeaderLinesVisibility="Both"
+                             ShowGroupDropArea="False"
+                             ColumnWidthMode="Star"
+                             NavigationMode="Row"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             AutoGenerateColumns="False">
+
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="Date" HeaderText="Date"/>
+                <dataGrid:GridTextColumn MappingName="StockTakeNum" HeaderText="Stock Take ID"/>
+                <dataGrid:GridTextColumn MappingName="BranchID" HeaderText="Branch ID"/>
+
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="150">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <!-- FIX #1: Button layout updated to match Delivery page -->
+                            <Button HorizontalAlignment="Center"
+                                    Tag="{Binding}"
+                                    Background="#0078D4" 
+                                    CornerRadius="12"
+                                    Foreground="White"
+                                    Click="ViewDetails_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <SymbolIcon Symbol="View"/>
+                                    <TextBlock Text="View Details" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+
+        </dataGrid:SfDataGrid>
+    </Grid>
+</Page>

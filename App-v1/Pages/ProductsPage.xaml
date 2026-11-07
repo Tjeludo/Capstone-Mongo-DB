@@ -1,0 +1,403 @@
+<!-- Products Page UI definition -->
+<Page
+    x:Class="App_v1.Pages.ProductsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:App_v1.Converters"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:numberformatting="using:Windows.Globalization.NumberFormatting"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
+
+    <!-- Bind this page to ProductViewModel -->
+    <Page.DataContext>
+        <viewModels:ProductViewModel />
+    </Page.DataContext>
+
+    <!-- Shared resources: converters and number formatting -->
+    <Page.Resources>
+        <!-- Converter for showing/hiding UI elements -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <!-- Formatter for displaying prices with 2 decimal places -->
+        <numberformatting:DecimalFormatter
+            x:Key="PriceNumberFormatter"
+            FractionDigits="2"
+            IntegerDigits="1"
+            IsGrouped="True" />
+    </Page.Resources>
+
+    <Grid>
+        <!-- Page layout: header row + content row -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Header row -->
+            <RowDefinition Height="*" />
+            <!-- Main content row -->
+        </Grid.RowDefinitions>
+
+        <!-- Page Header (Title + Action Buttons) -->
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <!-- Left: Title -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Right: Buttons -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Page title -->
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    Text="Products Management" />
+
+                <!-- Action buttons: Add / Download / Upload -->
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="10">
+
+                    <!-- Add Product button -->
+                    <Button
+                        x:Name="AddProductButton"
+                        Background="#41C200"
+                        Click="AddProduct_Click"
+                        CornerRadius="12"
+                        Foreground="White"
+                        Visibility="{Binding CanAddProduct, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xECC8;" />
+                            <TextBlock Text="Add Product" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Download CSV button (with progress indicator) -->
+                    <Button
+                        x:Name="DownloadButton"
+                        Background="#1A98FF"
+                        Click="DownloadCSV_Click"
+                        CornerRadius="12"
+                        Foreground="White"
+                        Visibility="{Binding CanDownloadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <StackPanel x:Name="DownloadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xEBD3;" />
+                                <TextBlock Text="Download CSV" />
+                            </StackPanel>
+                            <muxc:ProgressRing
+                                x:Name="DownloadBusyIndicator"
+                                Width="20"
+                                Height="20"
+                                IsActive="False"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Button>
+
+                    <!-- Upload CSV button (with progress indicator) -->
+                    <Button
+                        x:Name="UploadButton"
+                        Background="Orange"
+                        Click="UploadCSV_Click"
+                        CornerRadius="12"
+                        Foreground="White"
+                        Visibility="{Binding CanUploadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <StackPanel x:Name="UploadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE753;" />
+                                <TextBlock Text="Upload CSV" />
+                            </StackPanel>
+                            <muxc:ProgressRing
+                                x:Name="UploadBusyIndicator"
+                                Width="20"
+                                Height="20"
+                                IsActive="False"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Product Data Grid -->
+        <dataGrid:SfDataGrid
+            x:Name="sfDataGrid"
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AllowEditing="False"
+            AllowFiltering="True"
+            AllowGrouping="True"
+            AllowResizingColumns="True"
+            AllowSorting="True"
+            AllowTriStateSorting="True"
+            AutoGenerateColumns="False"
+            ColumnWidthMode="Star"
+            GridLinesVisibility="Both"
+            HeaderLinesVisibility="Both"
+            ItemsSource="{Binding Products}"
+            NavigationMode="Row"
+            SelectionMode="None"
+            ShowGroupDropArea="False">
+
+            <!-- Define visible product columns -->
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn HeaderText="Product ID" MappingName="Id" />
+                <dataGrid:GridTextColumn HeaderText="Product Name" MappingName="Name" />
+                <dataGrid:GridTextColumn HeaderText="Category Code" MappingName="Category" />
+                <dataGrid:GridNumericColumn HeaderText="Price (ZAR)" MappingName="Price" />
+                <dataGrid:GridTextColumn HeaderText="Size" MappingName="Size" />
+                <dataGrid:GridTextColumn HeaderText="Colour" MappingName="Colour" />
+
+                <!-- Actions column (Edit/Delete) -->
+                <dataGrid:GridTemplateColumn
+                    Width="160"
+                    AllowFiltering="False"
+                    AllowSorting="False"
+                    HeaderText="Actions">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="5">
+
+                                <!-- Edit product button -->
+                                <Button
+                                    Background="#28a745"
+                                    Click="EditProduct_Click"
+                                    CornerRadius="12"
+                                    Foreground="White"
+                                    Padding="8,4"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanEditProduct, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE932;" />
+                                        <TextBlock VerticalAlignment="Center" Text="Price" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Delete product button -->
+                                <Button
+                                    Background="#dc3545"
+                                    Click="DeleteProduct_Click"
+                                    CornerRadius="12"
+                                    Foreground="White"
+                                    Padding="8,4"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanDeleteProduct, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE74D;" />
+                                        <TextBlock VerticalAlignment="Center" Text="Delete" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+
+        <!-- Notification bar for feedback messages -->
+        <muxc:InfoBar
+            x:Name="NotificationInfoBar"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            IsOpen="False"
+            Margin="0,0,0,24"
+            MaxWidth="800" />
+
+        <!-- Add Product Dialog -->
+        <ContentDialog
+            x:Name="AddProductDialog"
+            Title="Add Product"
+            DefaultButton="Primary"
+            PrimaryButtonClick="AddProductDialog_PrimaryButtonClick"
+            PrimaryButtonText="Save"
+            SecondaryButtonText="Cancel">
+
+            <!-- Form content with validation -->
+            <ScrollViewer Padding="0,0,12,0" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="12">
+                    <!-- Product name input -->
+                    <TextBox
+                        x:Name="ProductNameTextBox"
+                        Width="300"
+                        Header="Product Name *"
+                        PlaceholderText="Enter product name"
+                        TextChanged="AddForm_InputChanged" />
+
+                    <!-- Category dropdown -->
+                    <ComboBox
+                        x:Name="ProductCategoryComboBox"
+                        Width="300"
+                        DisplayMemberPath="Name"
+                        Header="Category *"
+                        ItemsSource="{Binding Categories}"
+                        PlaceholderText="Select a category"
+                        SelectionChanged="AddForm_InputChanged" />
+
+                    <!-- Size dropdown -->
+                    <ComboBox
+                        x:Name="ProductSizeComboBox"
+                        Width="300"
+                        Header="Size *"
+                        PlaceholderText="Select a size"
+                        SelectionChanged="AddForm_InputChanged">
+                        <!-- Predefined sizes -->
+                        <x:String>none</x:String>
+                        <x:String>newborn</x:String>
+                        <x:String>0-3 months</x:String>
+                        <x:String>3-6 months</x:String>
+                        <x:String>6-12 months</x:String>
+                        <x:String>12-18 months</x:String>
+                        <x:String>18-24 months</x:String>
+                        <x:String>2-3 years</x:String>
+                        <x:String>3-4 years</x:String>
+                        <x:String>4-5 years</x:String>
+                    </ComboBox>
+
+                    <!-- Color dropdown -->
+                    <ComboBox
+                        x:Name="ProductColorComboBox"
+                        Width="300"
+                        Header="Color *"
+                        PlaceholderText="Select a color"
+                        SelectionChanged="AddForm_InputChanged">
+                        <!-- Predefined color list -->
+                        <x:String>Red</x:String>
+                        <x:String>Blue</x:String>
+                        <x:String>Yellow</x:String>
+                        <x:String>Green</x:String>
+                        <x:String>Orange</x:String>
+                        <x:String>Purple</x:String>
+                        <x:String>Black</x:String>
+                        <x:String>White</x:String>
+                        <x:String>Grey</x:String>
+                        <x:String>Light Grey</x:String>
+                        <x:String>Navy</x:String>
+                        <x:String>Beige</x:String>
+                        <x:String>Brown</x:String>
+                        <x:String>Cream</x:String>
+                        <x:String>Charcoal</x:String>
+                        <x:String>Silver</x:String>
+                        <x:String>Gold</x:String>
+                        <x:String>Peach</x:String>
+                        <x:String>Sky Blue</x:String>
+                        <x:String>Lilac</x:String>
+                        <x:String>Sea Green</x:String>
+                        <x:String>Olive</x:String>
+                        <x:String>Burgundy</x:String>
+                        <x:String>Maroon</x:String>
+                        <x:String>Hot Pink</x:String>
+                        <x:String>Turquoise</x:String>
+                        <x:String>Teal</x:String>
+                        <x:String>Cyan</x:String>
+                        <x:String>Magenta</x:String>
+                        <x:String>Chocolate</x:String>
+                        <x:String>Rose</x:String>
+                        <x:String>Mustard</x:String>
+                        <x:String>Pink</x:String>
+                        <x:String>Light Blue</x:String>
+                        <x:String>Aqua</x:String>
+                    </ComboBox>
+
+                    <!-- Price input -->
+                    <muxc:NumberBox
+                        x:Name="ProductPriceNumberBox"
+                        Width="300"
+                        Header="Price (ZAR) *"
+                        Maximum="5000"
+                        Minimum="1"
+                        NumberFormatter="{StaticResource PriceNumberFormatter}"
+                        PlaceholderText="Enter price e.g., 199.99"
+                        SpinButtonPlacementMode="Compact"
+                        ValueChanged="AddForm_InputChanged" />
+                    <TextBlock
+                        Margin="0,8,0,0"                        
+                        Foreground="Gray"
+                        TextWrapping="Wrap">
+                        <Run Text="NB. Please confirm product name before saving."/>
+                        <LineBreak/>
+                        <Run Text="      Once saved cant be changed"/>
+                    </TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <!-- Edit Product Dialog -->
+        <ContentDialog
+            x:Name="EditProductDialog"
+            Title="Edit Product"
+            DefaultButton="Primary"
+            PrimaryButtonClick="EditProductDialog_PrimaryButtonClick"
+            PrimaryButtonText="Update"
+            SecondaryButtonText="Cancel">
+
+            <!-- Edit form content -->
+            <ScrollViewer Padding="0,0,12,0" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="12">
+                    <!-- Product ID (read-only) -->
+                    <TextBox
+                        x:Name="EditProductIdTextBox"
+                        Width="300"
+                        Background="LightGray"
+                        Header="Product ID"
+                        IsReadOnly="True" />
+
+                    <!-- Editable product name -->
+                    <TextBox
+                        x:Name="EditProductNameTextBox"
+                        Width="300"
+                        Header="Product Name *"
+                        PlaceholderText="Enter product name"
+                        IsReadOnly="True" 
+                        Background="LightGray"/>
+
+                    <!-- Category (read-only) -->
+                    <TextBox
+                        x:Name="EditProductCategoryTextBox"
+                        Width="300"
+                        Background="LightGray"
+                        Header="Category"
+                        IsReadOnly="True" />
+
+                    <!-- Size (read-only) -->
+                    <TextBox
+                        x:Name="EditProductSizeTextBox"
+                        Width="300"
+                        Background="LightGray"
+                        Header="Size"
+                        IsReadOnly="True" />
+
+                    <!-- Color (read-only) -->
+                    <TextBox
+                        x:Name="EditProductColorTextBox"
+                        Width="300"
+                        Background="LightGray"
+                        Header="Color"
+                        IsReadOnly="True" />
+
+                    <!-- Editable price -->
+                    <muxc:NumberBox
+                        x:Name="EditProductPriceNumberBox"
+                        Width="300"
+                        Header="Price (ZAR) *"
+                        Maximum="5000"
+                        Minimum="1"
+                        NumberFormatter="{StaticResource PriceNumberFormatter}"
+                        PlaceholderText="Enter price e.g., 199.99"
+                        SpinButtonPlacementMode="Compact"
+                        ValueChanged="EditForm_InputChanged" />
+                                    </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+    </Grid>
+</Page>
+

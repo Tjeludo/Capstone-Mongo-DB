@@ -1,0 +1,44 @@
+<Page
+    x:Class="App_v1.Pages.OrderItemsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <viewModels:OrderItemsViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="16,12">
+            <TextBlock x:Name="PageTitle"
+                       Text="Order Items"
+                       FontSize="24"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <dataGrid:SfDataGrid x:Name="sfDataGrid"
+                             Grid.Row="1"
+                             ItemsSource="{Binding OrderItems}"
+                             ColumnWidthMode="Star"
+                             AutoGenerateColumns="False">
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="SupplierId" HeaderText="Supplier ID"/>
+                <dataGrid:GridTextColumn MappingName="ProductCode" HeaderText="Product Code"/>
+                <dataGrid:GridTextColumn MappingName="Description" HeaderText="Description"/>
+                <dataGrid:GridTextColumn MappingName="Price" HeaderText="Price"/>
+                <dataGrid:GridTextColumn MappingName="Quantity" HeaderText="Quantity"/>
+                <dataGrid:GridTextColumn MappingName="Subtotal" HeaderText="Subtotal"/>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+    </Grid>
+</Page>

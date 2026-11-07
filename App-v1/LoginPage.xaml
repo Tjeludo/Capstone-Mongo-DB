@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:notification="using:Syncfusion.UI.Xaml.Notifications"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
+
+    <!-- Set the DataContext to LoginViewModel for binding -->
+    <Page.DataContext>
+        <viewModels:LoginViewModel />
+    </Page.DataContext>
+
+    <!-- Root grid layout: 2 rows (top bar + main content) -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Row 0: notification bar -->
+            <RowDefinition Height="Auto"/>
+            <!-- Row 1: main login content -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Notification bar shown at the very top of the page -->
+        <InfoBar x:Name="LoginInfoBar"
+                 Grid.Row="0"
+                 IsOpen="False"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"
+                 Margin="0"/>
+
+        <!-- Main login content centered in the second row -->
+        <StackPanel Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16">
+
+            <!-- Busy indicator (shows loading state when IsBusy = true) -->
+            <notification:SfBusyIndicator
+                x:Name="BusyIndicator"
+                IsActive="{Binding IsBusy, Mode=OneWay}"
+                AnimationType="DoubleCircle"
+                DurationFactor="1.0"
+                SizeFactor="1.0"
+                BusyContent="Welcome"
+                BusyContentPosition="Top"
+                Width="100"
+                Height="100"
+                Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                HorizontalAlignment="Center"/>
+
+            <!-- Login form fields + buttons -->
+            <StackPanel x:Name="LoginForm"
+                        HorizontalAlignment="Center"
+                        Spacing="16"
+                        Width="300">
+
+                <!-- Staff ID input -->
+                <TextBox x:Name="UsernameTextBox"
+                         Header="Staff ID:"
+                         Text="{Binding StaffId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Password input -->
+                <PasswordBox x:Name="PasswordBox"
+                             Header="Password:"
+                             Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Login button -->
+                <Button Content="Login"
+                        Command="{Binding LoginCommand}"
+                        HorizontalAlignment="Center"
+                        Background="#1A98FF"                        
+                        FontWeight="SemiBold"
+                        Width="200"
+                        Height="36"
+                        CornerRadius="18"/>
+
+                <!-- Forgot password link -->
+                <HyperlinkButton Content="Forgot Password?"
+                                 HorizontalAlignment="Center"
+                                 Click="ForgotPassword_Click"
+                                 Margin="0,8,0,0"/>
+
+                <!-- Guest login link -->
+                <HyperlinkButton HorizontalAlignment="Center"
+                                 Click="GuestLogin_Click"
+                                 Margin="0,0,0,0">
+                    <TextBlock Text="Guest Login"
+                               TextDecorations="Underline"/>
+                </HyperlinkButton>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

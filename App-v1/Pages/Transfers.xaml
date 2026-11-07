@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.Transfers"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:Models="using:App_v1.Models"
+    mc:Ignorable="d">
+    <Page.DataContext>
+        <Models:TransferViewModel/>
+    </Page.DataContext>
+
+
+    <Page.Resources>
+       
+        <Style x:Key="AccentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#41C200"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+    </Page.Resources>
+    <!-- ▲▲▲ END OF CHANGES ▲▲▲ -->
+
+    <Grid x:Name="rootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Padding="16,12" Grid.Row="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Transfers"
+                   FontSize="24"
+                   VerticalAlignment="Center"
+                   Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10"
+                    Grid.Column="1">
+                    <!-- This button uses the same color but is styled directly -->
+                    <Button x:Name="MakeTransfer"
+                            Background="#41C200"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="MakeTransferClick">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE895;"/>
+                            <TextBlock Text="Make Transfer"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <InfoBar x:Name="TransferInfoBar"
+                     IsOpen="False"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Bottom"
+                     Margin="16,0,16,12"/>
+
+            <dataGrid:SfDataGrid x:Name="TransfersDataGrid"
+                                 ItemsSource="{Binding Transfers}"
+                                 AutoGenerateColumns="False"
+                                 AllowEditing="False"
+                                 AllowFiltering="True"
+                                 AllowSorting="True"
+                                 ColumnWidthMode="Star"
+                                 GridLinesVisibility="Both"
+                                 HeaderLinesVisibility="Both">
+                <dataGrid:SfDataGrid.Columns>
+                    <dataGrid:GridTextColumn MappingName="TransferID" HeaderText="Transfer ID"/>
+                    <dataGrid:GridTextColumn MappingName="Date" HeaderText="Date"/>
+                    <dataGrid:GridTextColumn MappingName="ItemCode" HeaderText="Item Code"/>
+                    <dataGrid:GridTextColumn MappingName="ProductName" HeaderText="Product Name"/>
+                    <dataGrid:GridTextColumn MappingName="FromBranch" HeaderText="From Branch"/>
+                    <dataGrid:GridTextColumn MappingName="ToBranch" HeaderText="To Branch"/>
+                    <dataGrid:GridTextColumn MappingName="Quantity" HeaderText="Quantity"/>
+                </dataGrid:SfDataGrid.Columns>
+            </dataGrid:SfDataGrid>
+
+        </Grid>
+
+        <ContentDialog
+             x:Name="MakeTransferDialog"
+             Title="Make Transfer"
+             PrimaryButtonText="Transfer"
+             SecondaryButtonText="Cancel"
+             DefaultButton="Primary"
+             IsPrimaryButtonEnabled="True"
+            PrimaryButtonStyle="{StaticResource AccentButtonStyle}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <AutoSuggestBox x:Name="itemCode"
+                        PlaceholderText="Choose Item"
+                        Header="Item"
+                        TextChanged="Item_TextChanged"
+                        QueryIcon="Find"
+                        QuerySubmitted="Item_QuerySubmitted"
+                        SuggestionChosen="Item_SuggestionChosen"/>
+                    <AutoSuggestBox x:Name="toBranch"
+                        PlaceholderText="To Branch"
+                        Header="To Branch"
+                        TextChanged="Branches_TextChanged"
+                        QueryIcon="Find"
+                        QuerySubmitted="Branches_QuerySubmitted"
+                        SuggestionChosen="Branches_SuggestionChosen"/>
+
+                    <AutoSuggestBox x:Name="fromBranch"
+                        PlaceholderText="From Branch"
+                        Header="From Branch"
+                        TextChanged="Branches_TextChanged"
+                        QueryIcon="Find"
+                        QuerySubmitted="Branches_QuerySubmitted"
+                        SuggestionChosen="Branches_SuggestionChosen"/>
+
+                    <NumberBox
+                        x:Name="quantity"
+                        Header="Enter quantity"
+                        Value="1"
+                        SpinButtonPlacementMode="Inline"
+                        SmallChange="1"
+                        LargeChange="100" />
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+    </Grid>
+</Page>
+

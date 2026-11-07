@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.StockTakeForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:models="using:App_v1.Models"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <models:StockTakeViewModel />
+    </Page.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <InfoBar x:Name="PageInfoBar"
+                 Grid.Row="0" Grid.ColumnSpan="2"
+                 IsOpen="False"
+                 CloseButtonClick="PageInfoBar_CloseButtonClick"
+                 Margin="0,0,0,10"/>
+
+        <TextBlock Text="Stock ID:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <TextBox x:Name="StockIDTextBox" Grid.Row="1" Grid.Column="1" Margin="0,5" IsReadOnly="True" />
+
+        <TextBlock Text="Date:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <editors:SfDatePicker x:Name="StockTakeDatePicker"
+           Grid.Row="2" Grid.Column="1"
+           ShowDropDownButton="True"
+           ShowDropDownHeader="True"
+           ShowColumnHeaders="True"
+           ShowSubmitButtons="True"
+           Margin="0,5">
+            <editors:SfDatePicker.DropDownHeader>
+                <TextBlock Text="Date Picker"/>
+            </editors:SfDatePicker.DropDownHeader>
+        </editors:SfDatePicker>
+
+        <TextBlock Text="Branch:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <editors:SfComboBox x:Name="BranchComboBox"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="0,5"
+                IsEditable="False"
+                PlaceholderText="Select a branch"
+                ItemsSource="{Binding Branches}"
+                DisplayMemberPath="BranchCity"
+                SelectedValuePath="BranchCode"
+                 SelectionChanged="BranchComboBox_SelectionChanged"/>
+
+        <TextBlock Text="Inventory Items:"
+           Grid.Row="4"
+           Grid.Column="0"
+           Grid.ColumnSpan="2"
+           Margin="0,15,0,5"
+           FontWeight="SemiBold"/>
+
+        <TextBox x:Name="SearchTextBox"
+             Grid.Row="5"
+             Grid.Column="0"
+             Grid.ColumnSpan="2"
+             Margin="0,5"
+             PlaceholderText="Search by Product Code or Name ..."
+             TextChanged="SearchTextBox_TextChanged"/>
+
+        <ListView x:Name="InventoryItemsListView"
+              Grid.Row="6"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Margin="0,5">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:InventoryItem">
+                    <StackPanel Orientation="Vertical" Margin="0,5">
+                        <TextBlock Text="{x:Bind itemID}" FontWeight="Bold"/>
+                        <TextBlock Text="{x:Bind itemName}" FontStyle="Italic" Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="Quantity On Hand:"/>
+                            <TextBlock Text="{x:Bind QuantityOnHand}" FontWeight="SemiBold"/>
+                            <TextBlock Text="Counted Quantity:"/>
+                            <NumberBox Width="100"
+                                       Value="{x:Bind CountedQuantity, Mode=TwoWay}"
+                                       Minimum="0"
+                                       
+                                       SmallChange="1"
+                                       LostFocus="CountedQuantity_LostFocus"
+                                       KeyDown="CountedQuantity_KeyDown" />
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
+                Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+            <Button Content="Save" x:Name="SaveButton"
+                Click="SaveButton_Click" Margin="5" MinWidth="120"/>
+            <Button Content="Back" x:Name="BackButton"
+                Click="BackButton_Click" Margin="5" 
+                MinWidth="120"/>
+        </StackPanel>
+    </Grid>
+</Page>

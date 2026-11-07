@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace App_v1.Demo
+{
+    public class OrderInfo
+    {
+        int orderID;
+        string customerId = string.Empty;
+        string country = string.Empty;
+        string customerName = string.Empty;
+        string shippingCity = string.Empty;
+
+        public int OrderID
+        {
+            get { return orderID; }
+            set { orderID = value; }
+        }
+
+        public string CustomerID
+        {
+            get { return customerId; }
+            set { customerId = value; }
+        }
+
+        public string CustomerName
+        {
+            get { return customerName; }
+            set { customerName = value; }
+        }
+
+        public string Country
+        {
+            get { return country; }
+            set { country = value; }
+        }
+
+        public string ShipCity
+        {
+            get { return shippingCity; }
+            set { shippingCity = value; }
+        }
+
+        public OrderInfo(int orderId, string customerName, string country, string customerId, string shipCity)
+        {
+            this.orderID = orderId;
+            this.customerName = customerName;
+            this.country = country;
+            this.customerId = customerId;
+            this.shippingCity = shipCity;
+        }
+    }
+}

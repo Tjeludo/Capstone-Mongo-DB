@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.StaffPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:viewModels="using:App_v1.ViewModels" 
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:syncfusion="using:Syncfusion.UI.Xaml.Core"
+    xmlns:notification="using:Syncfusion.UI.Xaml.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:App_v1.Converters"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
+
+    <Page.DataContext>
+        <viewModels:StaffViewModel/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Staff Management"
+                           FontSize="24"
+                           VerticalAlignment="Center"
+                           Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="10"
+                            Grid.Column="1">
+                    <Button x:Name="AddStaffButton"
+                            Background="#41C200"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="AddStaff_Click"
+                            Visibility="{Binding CanAddStaff, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xECC8;"/>
+                            <TextBlock Text="Add Staff"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DownloadButton"
+                            Background="#1A98FF" 
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="DownloadCSV_Click"
+                            Visibility="{Binding CanDownloadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <StackPanel x:Name="DownloadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xEBD3;"/>
+                                <TextBlock Text="Download CSV"/>
+                            </StackPanel>
+                            <notification:SfBusyIndicator x:Name="DownloadBusyIndicator"
+                                                          IsActive="False" 
+                                                          AnimationType="DottedLinear"
+                                                          SizeFactor="0.5" 
+                                                          DurationFactor="0.5"
+                                                          Visibility="Collapsed"
+                                                          Height="20"
+                                                          HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </Button>
+                    <Button x:Name="UploadButton"
+                            Background="Orange" 
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="UploadCSV_Click"
+                            Visibility="{Binding CanUploadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <StackPanel x:Name="UploadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE753;"/>
+                                <TextBlock Text="Upload CSV"/>
+                            </StackPanel>
+                            <notification:SfBusyIndicator x:Name="UploadBusyIndicator"
+                                                          IsActive="False" 
+                                                          AnimationType="DottedLinear"
+                                                          SizeFactor="0.5" 
+                                                          DurationFactor="0.5"
+                                                          Visibility="Collapsed"
+                                                          Height="20"
+                                                          HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <dataGrid:SfDataGrid x:Name="sfStaffGrid"
+                             Grid.Row="1"
+                             ItemsSource="{Binding StaffMembers}"
+                             SelectionMode="None"
+                             AllowFiltering="True"
+                             AllowSorting="True"
+                             AllowTriStateSorting="True"
+                             AllowEditing="False"
+                             GridLinesVisibility="Both"
+                             HeaderLinesVisibility="Both"
+                             ColumnWidthMode="Auto"
+                             AutoGenerateColumns="False">
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="Id" HeaderText="Staff ID"/>
+                <dataGrid:GridTextColumn MappingName="BranchCode" HeaderText="Branch"/>
+                <dataGrid:GridTextColumn MappingName="RoleCode" HeaderText="Role"/>
+                <dataGrid:GridTextColumn MappingName="FirstName" HeaderText="First Name"/>
+                <dataGrid:GridTextColumn MappingName="LastName" HeaderText="Last Name"/>
+                <dataGrid:GridTextColumn MappingName="Email" HeaderText="Email" TextWrapping="Wrap" Width="300"/>
+                <dataGrid:GridTextColumn MappingName="Status" HeaderText="Status"/>
+
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="360" AllowFiltering="False" AllowSorting="False">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+                                <Button Background="#FFC107"
+                                        Foreground="White"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        Click="PromoteStaff_Click"
+                                        Tag="{Binding}"
+                                        Visibility="{Binding DataContext.CanPromoteStaff, ElementName=sfStaffGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xF1CB;"/>
+                                        <TextBlock Text="Role" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Background="#1A98FF"
+                                        Foreground="White"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        Click="TransferStaff_Click"
+                                        Tag="{Binding}"
+                                        Visibility="{Binding DataContext.CanTransferStaff, ElementName=sfStaffGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE72D;"/>
+                                        <TextBlock Text="Transfer" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Background="#28a745"
+                                        Foreground="White"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        Click="EditStaff_Click"
+                                        Tag="{Binding}"
+                                        Visibility="{Binding DataContext.CanEditStaff, ElementName=sfStaffGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE932;"/>
+                                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Background="#dc3545"
+                                        Foreground="White"
+                                        CornerRadius="12"
+                                        Padding="8,4"
+                                        Click="DeleteStaff_Click"
+                                        Tag="{Binding}"
+                                        Visibility="{Binding DataContext.CanDeleteStaff, ElementName=sfStaffGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE74D;"/>
+                                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+
+        <muxc:InfoBar x:Name="NotificationInfoBar"
+                      IsOpen="False"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Bottom"
+                      Margin="0,0,0,24"
+                      MaxWidth="800"/>
+
+        <ContentDialog
+            x:Name="AddStaffDialog"
+            Title="Add Staff Member"
+            PrimaryButtonText="Save"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="False"
+            PrimaryButtonClick="AddStaffDialog_PrimaryButtonClick">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <muxc:InfoBar x:Name="AddDialogInfoBar" IsOpen="False" />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="StaffBranchCodeComboBox" 
+                                  Header="Branch *" 
+                                  Width="150"
+                                  ItemsSource="{Binding Branches}"
+                                  DisplayMemberPath="City"
+                                  SelectedValuePath="Id"
+                                  PlaceholderText="Select branch"
+                                  SelectionChanged="AddForm_InputChanged"/>
+                        <ComboBox x:Name="StaffRoleCodeComboBox" 
+                                  Header="Role *" 
+                                  Width="150"
+                                  ItemsSource="{Binding Roles}"
+                                  DisplayMemberPath="RoleName"
+                                  SelectedValuePath="RoleAbbreviation"
+                                  PlaceholderText="Select role"
+                                  SelectionChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <TextBox x:Name="StaffFirstNameTextBox" 
+                             Header="First Name *" 
+                             Width="300"
+                             PlaceholderText="Enter first name"
+                             TextChanged="AddForm_InputChanged"/>
+                    <TextBox x:Name="StaffSurnameTextBox" 
+                             Header="Surname *" 
+                             Width="300"
+                             PlaceholderText="Enter surname"
+                             TextChanged="AddForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="StaffGenderComboBox" 
+                                  Header="Gender *" 
+                                  Width="150"
+                                  PlaceholderText="Select gender"
+                                  SelectionChanged="AddForm_InputChanged">
+                            <ComboBoxItem Content="Male"/>
+                            <ComboBoxItem Content="Female"/>
+                            <ComboBoxItem Content="Other"/>
+                        </ComboBox>
+                        <ComboBox x:Name="StaffStatusComboBox" 
+                                  Header="Status *" 
+                                  Width="150"
+                                  PlaceholderText="Select status"
+                                  SelectionChanged="AddForm_InputChanged">
+                            <ComboBoxItem Content="Active"/>
+                            <ComboBoxItem Content="Inactive"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <DatePicker x:Name="StaffDOBPicker" 
+                                Header="Date of Birth *" 
+                                Width="300"
+                                SelectedDateChanged="AddForm_InputChanged"/>
+                    <TextBox x:Name="StaffEmailTextBox" 
+                             Header="Personal Email *" 
+                             Width="300"
+                             PlaceholderText="Enter personal email address"
+                             TextChanged="AddForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="StaffCountryCodeComboBox" 
+                                  Header="Code *" 
+                                  Width="85"
+                                  SelectionChanged="AddForm_InputChanged">
+                            <ComboBoxItem Content="+27"/>
+                            <ComboBoxItem Content="+263"/>
+                        </ComboBox>
+                        <TextBox x:Name="StaffPhoneTextBox" 
+                                 Header="Phone Number *" 
+                                 Width="215"
+                                 PlaceholderText="Enter 9 digit phone number"
+                                 TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <TextBox x:Name="StaffStreetTextBox" 
+                             Header="Street/Road Name *" 
+                             Width="300"
+                             PlaceholderText="Enter street address"
+                             TextChanged="AddForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox x:Name="StaffSuburbTextBox" 
+                                 Header="Suburb" 
+                                 Width="150"
+                                 PlaceholderText="Enter suburb"/>
+                        <TextBox x:Name="StaffCityTextBox" 
+                                 Header="City *" 
+                                 Width="150"
+                                 PlaceholderText="Enter city"
+                                 TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox x:Name="StaffCountryTextBox" 
+                                 Header="Country *" 
+                                 Width="150"
+                                 PlaceholderText="Enter country"
+                                 TextChanged="AddForm_InputChanged"/>
+                        <TextBox x:Name="StaffZipCodeTextBox" 
+                                 Header="Zip Code *" 
+                                 Width="150"
+                                 PlaceholderText="Enter zip code"
+                                 TextChanged="AddForm_InputChanged"/>
+                    </StackPanel>
+                    <DatePicker x:Name="StaffStartDatePicker" 
+                                Header="Start Date *" 
+                                Width="300"
+                                SelectedDateChanged="AddForm_InputChanged"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <ContentDialog
+            x:Name="EditStaffDialog"
+            Title="Edit Staff Member"
+            PrimaryButtonText="Update"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="True"
+            PrimaryButtonClick="EditStaffDialog_PrimaryButtonClick">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <TextBox x:Name="EditStaffIdTextBox" 
+                             Header="Staff ID" 
+                             Width="300" 
+                             IsReadOnly="True"
+                             Background="LightGray"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox x:Name="EditStaffBranchCodeTextBox" 
+                                  Header="Branch" 
+                                  Width="150"
+                                  IsReadOnly="True"
+                                  Background="LightGray"/>
+                        <TextBox x:Name="EditStaffRoleCodeTextBox" 
+                                  Header="Role" 
+                                  Width="150"
+                                  IsReadOnly="True"
+                                  Background="LightGray"/>
+                    </StackPanel>
+                    <TextBox x:Name="EditStaffFirstNameTextBox" 
+                             Header="First Name *" 
+                             Width="300"
+                             TextChanged="EditForm_InputChanged"/>
+                    <TextBox x:Name="EditStaffSurnameTextBox" 
+                             Header="Surname *" 
+                             Width="300"
+                             TextChanged="EditForm_InputChanged"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="EditStaffGenderComboBox" 
+                                  Header="Gender" 
+                                  Width="150">
+                            <ComboBoxItem Content="Male"/>
+                            <ComboBoxItem Content="Female"/>
+                            <ComboBoxItem Content="Other"/>
+                        </ComboBox>
+                        <ComboBox x:Name="EditStaffStatusComboBox" 
+                                  Header="Status" 
+                                  Width="150">
+                            <ComboBoxItem Content="Active"/>
+                            <ComboBoxItem Content="Inactive"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="EditStaffCountryCodeComboBox" Header="Code *" Width="85">
+                            <ComboBoxItem Content="+27"/>
+                            <ComboBoxItem Content="+263"/>
+                        </ComboBox>
+                        <TextBox x:Name="EditStaffPhoneTextBox" Header="Phone Number *" Width="215" PlaceholderText="Enter 9 digit number"/>
+                    </StackPanel>
+                    <DatePicker x:Name="EditStaffDOBPicker" 
+                                Header="Date of Birth" 
+                                Width="300"/>
+                    <TextBox x:Name="EditStaffEmailTextBox" 
+                             Header="Staff Email" 
+                             Width="300"
+                             IsReadOnly="True"
+                             Background="LightGray"/>
+                    <TextBox x:Name="EditStaffAddressTextBox" 
+                             Header="Address" 
+                             Width="300"
+                             Height="80"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <ContentDialog
+            x:Name="TransferStaffDialog"
+            Title="Transfer Staff Member"
+            PrimaryButtonText="Transfer"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="False"
+            PrimaryButtonClick="TransferStaffDialog_PrimaryButtonClick">
+            <StackPanel Spacing="12">
+                <TextBox x:Name="TransferStaffIdTextBox" 
+                         Header="Staff ID" 
+                         Width="300" 
+                         IsReadOnly="True"
+                         Background="LightGray"/>
+                <TextBox x:Name="TransferCurrentBranchTextBox" 
+                         Header="Current Branch" 
+                         Width="300" 
+                         IsReadOnly="True"
+                         Background="LightGray"/>
+                <ComboBox x:Name="TransferNewBranchComboBox" 
+                          Header="New Branch *" 
+                          Width="300"
+                          ItemsSource="{Binding Branches}"
+                          DisplayMemberPath="City"
+                          SelectedValuePath="Id"
+                          PlaceholderText="Select new branch"
+                          SelectionChanged="TransferForm_InputChanged"/>
+            </StackPanel>
+        </ContentDialog>
+
+        <ContentDialog
+            x:Name="PromoteStaffDialog"
+            Title="Promote Staff Member"
+            PrimaryButtonText="Promote"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="False"
+            PrimaryButtonClick="PromoteStaffDialog_PrimaryButtonClick">
+            <StackPanel Spacing="12">
+                <TextBox x:Name="PromoteStaffIdTextBox" 
+                         Header="Staff ID" 
+                         Width="300" 
+                         IsReadOnly="True"
+                         Background="LightGray"/>
+                <TextBox x:Name="PromoteCurrentRoleTextBox" 
+                         Header="Current Role" 
+                         Width="300" 
+                         IsReadOnly="True"
+                         Background="LightGray"/>
+                <ComboBox x:Name="PromoteNewRoleComboBox" 
+                          Header="New Role *" 
+                          Width="300"
+                          ItemsSource="{Binding Roles}"
+                          DisplayMemberPath="RoleName"
+                          SelectedValuePath="RoleAbbreviation"
+                          PlaceholderText="Select new role"
+                          SelectionChanged="PromoteForm_InputChanged"/>
+            </StackPanel>
+        </ContentDialog>
+    </Grid>
+</Page>

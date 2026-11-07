@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.UsersPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <viewModels:UserViewModel/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <local:StatusToBooleanConverter x:Key="StatusToBooleanConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="16,12">
+            <TextBlock Text="Users Management"
+                       FontSize="24"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <dataGrid:SfDataGrid x:Name="sfUsersGrid"
+                             Grid.Row="1"
+                             ItemsSource="{Binding Users}"
+                             SelectionMode="None"
+                             AllowFiltering="True"
+                             AllowSorting="True"
+                             AllowTriStateSorting="True"
+                             GridLinesVisibility="Both"
+                             HeaderLinesVisibility="Both"
+                             ShowGroupDropArea="False"
+                             ColumnWidthMode="Star"
+                             AutoGenerateColumns="False">
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="StaffID" HeaderText="Staff ID" ColumnWidthMode="Auto"/>
+                <dataGrid:GridTextColumn MappingName="Email" HeaderText="Email"/>
+                <dataGrid:GridTextColumn MappingName="Password" HeaderText="Password" IsHidden="True"/>
+                <dataGrid:GridTextColumn MappingName="Status" HeaderText="Status" ColumnWidthMode="SizeToHeader"/>
+                <dataGrid:GridTextColumn MappingName="CreatedAt" HeaderText="Created At" ColumnWidthMode="SizeToCells"/>
+
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="120" AllowFiltering="False" AllowSorting="False">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToggleSwitch x:Name="StatusToggle"
+                                              OffContent="inactive"
+                                              OnContent="active"
+                                              Toggled="Status_Toggled"
+                                              DataContext="{Binding}"
+                                              IsEnabled="{Binding DataContext.CanChangeStatus, ElementName=sfUsersGrid}"
+                                              IsOn="{Binding Status, Converter={StaticResource StatusToBooleanConverter}, Mode=OneWay}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+    </Grid>
+</Page>

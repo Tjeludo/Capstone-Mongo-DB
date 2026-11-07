@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.CategoriesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:syncfusion="using:Syncfusion.UI.Xaml.Core"
+    xmlns:notification="using:Syncfusion.UI.Xaml.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:App_v1.Converters"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
+
+    <!-- Bind the page to the CategoryViewModel -->
+    <Page.DataContext>
+        <viewModels:CategoryViewModel/>
+    </Page.DataContext>
+
+    <!-- Shared resources for converters -->
+    <Page.Resources>
+        <!-- Converter: Boolean (true/false) to Visibility (Visible/Collapsed) -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <!-- Main grid layout with header row and content row -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header row -->
+            <RowDefinition Height="*"/>
+            <!-- Content/Data row -->
+        </Grid.RowDefinitions>
+
+        <!-- Header section with title and action buttons -->
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Title on left -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Buttons on right -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Page title -->
+                <TextBlock 
+                    Grid.Column="0"
+                    Text="Categories Management"
+                    FontSize="24"
+                    VerticalAlignment="Center"/>
+
+                <!-- Action buttons (Add, Download, Upload) -->
+                <StackPanel 
+                    Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+
+                    <!-- Add Category Button -->
+                    <Button 
+                        x:Name="AddCategoryButton"
+                        Background="#41C200"
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="AddCategory_Click"
+                        Visibility="{Binding CanAddCategory, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xECC8;"/>
+                            <TextBlock Text="Add Category"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Download CSV Button -->
+                    <Button 
+                        x:Name="DownloadButton"
+                        Background="#1A98FF" 
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="DownloadCSV_Click"
+                        Visibility="{Binding CanDownloadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <!-- Default content when idle -->
+                            <StackPanel x:Name="DownloadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xEBD3;"/>
+                                <TextBlock Text="Download CSV"/>
+                            </StackPanel>
+                            <!-- Busy indicator while downloading -->
+                            <notification:SfBusyIndicator 
+                                x:Name="DownloadBusyIndicator"
+                                IsActive="False" 
+                                AnimationType="DottedLinear"
+                                SizeFactor="0.5" 
+                                DurationFactor="0.5"
+                                Visibility="Collapsed"
+                                Height="20"
+                                HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </Button>
+
+                    <!-- Upload CSV Button -->
+                    <Button 
+                        x:Name="UploadButton"
+                        Background="Orange" 
+                        Foreground="White"
+                        CornerRadius="12"
+                        Click="UploadCSV_Click"
+                        Visibility="{Binding CanUploadCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid>
+                            <!-- Default content when idle -->
+                            <StackPanel x:Name="UploadContent" Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE753;"/>
+                                <TextBlock Text="Upload CSV"/>
+                            </StackPanel>
+                            <!-- Busy indicator while uploading -->
+                            <notification:SfBusyIndicator 
+                                x:Name="UploadBusyIndicator"
+                                IsActive="False" 
+                                AnimationType="DottedLinear"
+                                SizeFactor="0.5" 
+                                DurationFactor="0.5"
+                                Visibility="Collapsed"
+                                Height="20"
+                                HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Categories DataGrid -->
+        <dataGrid:SfDataGrid 
+            x:Name="sfDataGrid"
+            Grid.Row="1"
+            ItemsSource="{Binding Categories}"
+            SelectionMode="None"
+            AllowFiltering="True"
+            AllowSorting="True"
+            AllowTriStateSorting="True"
+            AllowGrouping="True"
+            AllowEditing="False"
+            AllowResizingColumns="True"
+            GridLinesVisibility="Both"
+            HeaderLinesVisibility="Both"
+            ShowGroupDropArea="False"
+            ColumnWidthMode="Star"
+            NavigationMode="Row"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AutoGenerateColumns="False">
+
+            <!-- Columns for category properties -->
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="Id" HeaderText="Category ID" />
+                <dataGrid:GridTextColumn MappingName="Name" HeaderText="Name"/>
+                <dataGrid:GridTextColumn MappingName="Description" HeaderText="Description" TextWrapping="Wrap" Width="400"/>
+                <dataGrid:GridTextColumn MappingName="Products" HeaderText="No. Products"/>
+
+                <!-- Actions column with View and Edit buttons -->
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="160" AllowFiltering="False" AllowSorting="False">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+                                <!-- View Button -->
+                                <Button 
+                                    Background="#17a2b8"
+                                    Foreground="White"
+                                    CornerRadius="12"
+                                    HorizontalAlignment="Center"
+                                    Padding="8,4"
+                                    Click="ViewCategory_Click"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanViewCategory, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE890;" />
+                                        <TextBlock Text="View" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Edit Button -->
+                                <Button 
+                                    Background="#28a745"
+                                    Foreground="White"
+                                    CornerRadius="12"
+                                    HorizontalAlignment="Center"
+                                    Padding="8,4"
+                                    Click="EditCategory_Click"
+                                    Tag="{Binding}"
+                                    Visibility="{Binding DataContext.CanEditCategory, ElementName=sfDataGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE932;" />
+                                        <TextBlock Text="Edit" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+
+        <!-- Notification bar at bottom of page -->
+        <muxc:InfoBar 
+            x:Name="NotificationInfoBar"
+            IsOpen="False"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Margin="0,0,0,24"
+            MaxWidth="800"/>
+
+        <!-- Add Category Dialog -->
+        <ContentDialog
+            x:Name="AddCategoryDialog"
+            Title="Add Category"
+            PrimaryButtonText="Save"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="False"
+            PrimaryButtonClick="AddCategoryDialog_PrimaryButtonClick">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <!-- Validation/Notification InfoBar -->
+                    <muxc:InfoBar x:Name="AddDialogInfoBar" IsOpen="False" />
+
+                    <!-- Category name input -->
+                    <TextBox 
+                        x:Name="CategoryNameTextBox" 
+                        Header="Name *" 
+                        Width="300"
+                        PlaceholderText="Enter category name"
+                        TextChanged="AddForm_TextChanged"/>
+
+                    <!-- Optional description input -->
+                    <TextBox 
+                        x:Name="CategoryDescriptionTextBox" 
+                        Header="Description" 
+                        Width="300"
+                        Height="120"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        PlaceholderText="Enter category description (optional)"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <!-- Edit Category Dialog -->
+        <ContentDialog
+            x:Name="EditCategoryDialog"
+            Title="Edit Category"
+            PrimaryButtonText="Update"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="True"
+            PrimaryButtonClick="EditCategoryDialog_PrimaryButtonClick">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <!-- Validation/Notification InfoBar -->
+                    <muxc:InfoBar x:Name="EditDialogInfoBar" IsOpen="False" />
+
+                    <!-- Read-only Category ID -->
+                    <TextBox 
+                        x:Name="EditCategoryIdTextBox" 
+                        Header="Category ID" 
+                        Width="300" 
+                        IsReadOnly="True"
+                        Background="LightGray"/>
+
+                    <!-- Editable category name -->
+                    <TextBox 
+                        x:Name="EditCategoryNameTextBox" 
+                        Header="Name *" 
+                        Width="300"
+                        PlaceholderText="Enter category name"
+                        TextChanged="EditForm_TextChanged"/>
+
+                    <!-- Editable description -->
+                    <TextBox 
+                        x:Name="EditCategoryDescriptionTextBox" 
+                        Header="Description" 
+                        Width="300"
+                        Height="120"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        PlaceholderText="Enter category description (optional)"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+    </Grid>
+</Page>

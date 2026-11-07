@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.Branches"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:Models="using:App_v1.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    mc:Ignorable="d">
+    <Page.DataContext>
+        <Models:BranchesViewModel/>
+    </Page.DataContext>
+
+    <Grid x:Name="rootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Padding="16,12" Grid.Row="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Branches"
+                           FontSize="24"
+                           VerticalAlignment="Center"
+                           Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="10"
+                            Grid.Column="1">
+                    <Button x:Name="AddBranch"
+                            Background="#41C200"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="AddBranchClick">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xECC8;"/>
+                            <TextBlock Text="Add Branch"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="EditBranchButton"
+                            Background="#1A98FF"
+                            Foreground="White"
+                            CornerRadius="12"
+                            Click="EditBranchClick">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE70F;"/>
+                            <TextBlock Text="Edit Branch"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <InfoBar x:Name="BranchInfoBar"
+                     IsOpen="False"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Bottom"
+                     Margin="16,0,16,12"/>
+
+            <dataGrid:SfDataGrid x:Name="BranchesDataGrid"
+                                 AutoGenerateColumns="True"
+                                 ItemsSource="{Binding Branches}"
+                                 Width="Auto"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Top"
+                                 AllowDraggingColumns="True"
+                                 AllowSorting="True"                 
+                                 AllowEditing="False"
+                                 SelectionMode="Single"                     
+                                 AllowFiltering="True"
+                                 AllowGrouping="False"
+                                 ColumnWidthMode="Star"
+                                 GridLinesVisibility="Both"
+                                 HeaderLinesVisibility="Both"
+                                 ShowGroupDropArea="False"/>
+        </Grid>
+
+        <ContentDialog
+            x:Name="AddBranchDialog"
+            Title="Add Branch"
+            PrimaryButtonText="Add"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="True">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <TextBox x:Name="locationNameTextBox" 
+                             Header="Location *" 
+                             Width="300"
+                             PlaceholderText="Enter branch location"/>
+                    <TextBox x:Name="ContactDetailsTextBox" 
+                             Header="Contact Details *" 
+                             Width="300"
+                             TextWrapping="Wrap"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             PlaceholderText="Enter contact details"/>
+                    <TextBox x:Name="ManagerTextBox" 
+                             Header="Manager *" 
+                             Width="300"
+                             PlaceholderText="Enter branch manager"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        <ContentDialog
+            x:Name="EditBranchDialog"
+            Title="Edit Branch"
+            PrimaryButtonText="Save Changes"
+            SecondaryButtonText="Cancel"
+            DefaultButton="Primary"
+            IsPrimaryButtonEnabled="True">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+                <StackPanel Spacing="12">
+                    <TextBox x:Name="editLocationNameTextBox" 
+                             Header="Location *" 
+                             Width="300"
+                             PlaceholderText="Enter branch location"/>
+                    <TextBox x:Name="editContactDetailsTextBox" 
+                             Header="Contact Details *" 
+                             Width="300"
+                             TextWrapping="Wrap"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             PlaceholderText="Enter contact details"/>
+                    <TextBox x:Name="editManagerTextBox" 
+                             Header="Manager *" 
+                             Width="300"
+                             PlaceholderText="Enter branch manager"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+    </Grid>
+</Page>

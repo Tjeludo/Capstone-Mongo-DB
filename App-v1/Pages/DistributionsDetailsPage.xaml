@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.DistributionsDetailsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:Models="using:App_v1.Models"
+    mc:Ignorable="d">
+    <Page.DataContext>
+        <Models:DistributionsDetailsViewModel />
+    </Page.DataContext>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock x:Name="PageTitle" Text="Distribution Details" FontSize="24" />
+        </StackPanel>
+
+        <dataGrid:SfDataGrid
+            Grid.Row="1"
+            ItemsSource="{Binding DistributionItems}"
+            AutoGenerateColumns="False"
+            GridLinesVisibility="Both"
+            ColumnWidthMode="Star">
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="ProductCode" HeaderText="Product Code" />
+                <dataGrid:GridTextColumn MappingName="ProductName" HeaderText="Product Name" />
+                <dataGrid:GridTextColumn MappingName="ToBranch" HeaderText="To Branch" />
+                <dataGrid:GridTextColumn MappingName="Quantity" HeaderText="Quantity" />
+                
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+    </Grid>
+</Page>

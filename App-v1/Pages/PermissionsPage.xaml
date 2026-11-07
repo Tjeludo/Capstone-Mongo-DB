@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App_v1.Pages.PermissionsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:App_v1.ViewModels"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <viewModels:PermissionsViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Permissions Management" FontSize="24" VerticalAlignment="Center" Grid.Column="0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Grid.Column="1">
+                    <Button Content="Add Permissions" Background="#41C200" Foreground="White" CornerRadius="12" Click="AddPermission_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <dataGrid:SfDataGrid x:Name="sfDataGrid"
+                             Grid.Row="1"
+                             ItemsSource="{Binding Permissions}"
+                             AllowFiltering="True"
+                             AllowSorting="True"
+                             AllowTriStateSorting="True"
+                             ColumnWidthMode="Star"
+                             AutoGenerateColumns="False">
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridTextColumn MappingName="Id" HeaderText="Permission ID" Width="120"/>
+                <dataGrid:GridTextColumn MappingName="Name" HeaderText="Permission Name" Width="200"/>
+                <dataGrid:GridTextColumn MappingName="Status" HeaderText="Status" Width="150"/>
+                <dataGrid:GridTextColumn MappingName="CreationDate" HeaderText="Creation Date" Width="180"/>
+
+                <dataGrid:GridTemplateColumn HeaderText="Actions" Width="200" AllowFiltering="False" AllowSorting="False">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+                                <Button Background="#28a745" Foreground="White" CornerRadius="12" Padding="8,4" Click="GrantButton_Click" Tag="{Binding}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE73E;"/>
+                                        <TextBlock Text="Grant" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Background="#dc3545" Foreground="White" CornerRadius="12" Padding="8,4" Click="RevokeButton_Click" Tag="{Binding}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xECE4;"/>
+                                        <TextBlock Text="Revoke" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+
+        <ContentDialog x:Name="AddPermissionDialog"
+                       Title="Add Permissions by Section"
+                       PrimaryButtonText="Add"
+                       SecondaryButtonText="Cancel"
+                       DefaultButton="Primary">
+            <TextBox x:Name="SectionTextBox" Header="Section Name" PlaceholderText="e.g., suppliers, products" Width="300"/>
+        </ContentDialog>
+
+        <ContentDialog x:Name="GrantRevokeDialog"
+                       PrimaryButtonText="Confirm"
+                       SecondaryButtonText="Cancel"
+                       DefaultButton="Primary">
+            <TextBox x:Name="RoleNameTextBox" Header="Role Name" PlaceholderText="Enter the role to apply action to" Width="300"/>
+        </ContentDialog>
+    </Grid>
+</Page>

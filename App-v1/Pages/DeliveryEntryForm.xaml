@@ -1,0 +1,102 @@
+<Page
+    x:Class="App_v1.Pages.DeliveryEntryForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App_v1.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
+    xmlns:models="using:App_v1.Models"
+    mc:Ignorable="d">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <InfoBar x:Name="PageInfoBar"
+                 Grid.Row="0"
+                 IsOpen="False"
+                 IsClosable="True"
+                 Margin="0,0,0,5"
+                 CloseButtonClick="PageInfoBar_CloseButtonClick" />
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="5">
+                <TextBlock Text="Delivery ID:" />
+                <TextBox 
+                    x:Name="DeliveryIdTextBox" IsReadOnly="True" />
+
+                <TextBlock Text="Date:" Margin="0,5,0,0"/>
+                <editors:SfDatePicker x:Name="DeliveryDatePicker"
+                      ShowDropDownButton="True"
+                      ShowDropDownHeader="True"
+                      ShowColumnHeaders="True"
+                      ShowSubmitButtons="True">
+                    <editors:SfDatePicker.DropDownHeader>
+                        <TextBlock Text="Date Picker"/>
+                    </editors:SfDatePicker.DropDownHeader>
+                </editors:SfDatePicker>
+
+                <TextBlock Text="Order ID:" />
+                <TextBox x:Name="OrderIDTextBox" KeyDown="OrderIDTextBox_KeyDown"/>
+
+                <TextBlock Text="Supplier ID:" />
+                <TextBox x:Name="SupplierIDTextBox" IsReadOnly="True" />
+
+                <TextBlock Text="Supplier Name:" />
+                <TextBox x:Name="SupplierNameTextBox" IsReadOnly="True" />
+
+                <TextBlock Text="Order Items:" Margin="0,10,0,0"/>
+                <TextBox x:Name="SearchTextBox" PlaceholderText="Search by Product Code or Name..." TextChanged="SearchTextBox_TextChanged" />
+
+                <ListView x:Name="OrderItemsListView">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:PurchaseOrderItem">
+                            <StackPanel Orientation="Vertical" Margin="0,5" Spacing="5">
+                                <TextBlock Text="{x:Bind ItemId}" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind ItemName}" FontStyle="Italic"/>
+
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="{x:Bind QuantityLabel}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind MissingQuantity}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Received Quantity:" VerticalAlignment="Center"/>
+
+                                    <TextBox x:Name="QuantityTextBox" 
+                                             Width="80" 
+                                             PlaceholderText="Qty" 
+                                             Text="{x:Bind QuantityReceived, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <TextBlock Text="Comments:" VerticalAlignment="Center"/>
+                                    <TextBox Width="200" 
+                                             PlaceholderText="Comments" 
+                                             Text="{x:Bind Comments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+
+                                <InfoBar Message="{x:Bind ValidationMessage, Mode=OneWay}"
+                                         Severity="{x:Bind Severity, Mode=OneWay}"
+                                         IsOpen="{x:Bind IsInvalid, Mode=OneWay}"
+                                         IsClosable="False"
+                                         Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <TextBlock Text="Overall delivery comment:"/>
+                <TextBox x:Name="overallDeliveryTextBox" AcceptsReturn="True" Height="60"/>
+
+                <TextBlock Text="Checked By:"/>
+                <TextBox x:Name="CheckedByTextBox"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button Content="Save" Click="Save_Click" Margin="0,0,10,0" />
+                    <Button Content="Back" Click="Back_Click" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
